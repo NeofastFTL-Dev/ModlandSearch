@@ -153,6 +153,7 @@ story:
 
 ## License
 
-`Cargo.toml` currently declares **MIT**, but no `LICENSE` file exists yet. Add an MIT licence file
-(or change the crate metadata) before making the repository public — until then the default is
-“all rights reserved”.
+MIT, as already declared in `Cargo.toml` - see [LICENSE](LICENSE).
+
+The libopenmpt DLLs that `build.sh` fetches are BSD-3-Clause; their licence texts ship in
+`third_party/libopenmpt/` next to the code that loads them.
