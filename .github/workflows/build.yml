@@ -1,0 +1,77 @@
+name: build
+
+# Runs both supported build paths on every push, including the libopenmpt fetch
+# (the DLLs are not tracked in git, so a passing build proves the download works).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows host build
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: ./build.sh
+        run: ./build.sh
+
+      - name: Check artifacts and the five libopenmpt DLLs
+        run: |
+          set -euo pipefail
+          for f in target/release/ModlandZoeker.exe target/release/modland-cli.exe; do
+            test -f "$f" || { echo "missing $f"; exit 1; }
+          done
+          dlls=$(ls target/release/*.dll 2>/dev/null | wc -l)
+          echo "DLLs next to the exes: $dlls"
+          ls -l target/release/*.dll
+          test "$dlls" -eq 5 || { echo "expected 5 libopenmpt DLLs, found $dlls"; exit 1; }
+          # grep -q would SIGPIPE strings and trip pipefail, so capture the value first.
+          ver=$(strings target/release/libopenmpt.dll | grep -o 'libopenmpt-0\.[0-9]*\.[0-9]*' | tail -1 || true)
+          echo "libopenmpt version string: ${ver:-<unreadable, strings missing?>}"
+
+  linux-cross:
+    name: Linux cross-build (x86_64-pc-windows-gnu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install mingw-w64
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends gcc-mingw-w64-x86-64
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: x86_64-pc-windows-gnu
+
+      - name: TARGET=x86_64-pc-windows-gnu ./build.sh
+        run: TARGET=x86_64-pc-windows-gnu ./build.sh
+
+      - name: Check artifacts and the five libopenmpt DLLs
+        run: |
+          set -euo pipefail
+          out=target/x86_64-pc-windows-gnu/release
+          for f in "$out/ModlandZoeker.exe" "$out/modland-cli.exe"; do
+            test -f "$f" || { echo "missing $f"; exit 1; }
+          done
+          dlls=$(ls "$out"/*.dll 2>/dev/null | wc -l)
+          echo "DLLs next to the exes: $dlls"
+          test "$dlls" -eq 5 || { echo "expected 5 libopenmpt DLLs, found $dlls"; exit 1; }
+          file "$out/ModlandZoeker.exe" | grep -q 'PE32+' \
+            || { echo "$out/ModlandZoeker.exe is not a PE32+ binary"; exit 1; }
+          ver=$(strings "$out/libopenmpt.dll" | grep -o 'libopenmpt-0\.[0-9]*\.[0-9]*' | tail -1 || true)
+          echo "libopenmpt version string: ${ver:-<none>}"
+          test "$ver" = 'libopenmpt-0.8.10' \
+            || { echo "libopenmpt.dll does not report 0.8.10 (got: ${ver:-none})"; exit 1; }

@@ -60,7 +60,11 @@ if ! echo "$SHA256  $CACHE" | sha256sum -c - >/dev/null 2>&1; then
 fi
 
 echo "=== unpacking bin/* into third_party/libopenmpt"
+# unzip first, then tar (bsdtar reads zip; GNU tar fails and falls through),
+# then python3 - that order works on Linux, macOS and Git Bash on Windows.
 if command -v unzip >/dev/null 2>&1 && unzip -q -o "$CACHE" 'bin/*' -d "$DEST" 2>/dev/null; then
+  :
+elif command -v tar >/dev/null 2>&1 && tar -xf "$CACHE" -C "$DEST" bin 2>/dev/null; then
   :
 elif command -v python3 >/dev/null 2>&1; then
   python3 - "$CACHE" "$DEST" <<'PY'
@@ -71,8 +75,6 @@ with zipfile.ZipFile(archive) as z:
         if info.filename.startswith("bin/") and not info.is_dir():
             z.extract(info, dest)
 PY
-elif command -v tar >/dev/null 2>&1 && tar -xf "$CACHE" -C "$DEST" bin 2>/dev/null; then
-  :
 else
   echo "error: no unzip, python3 or zip-capable tar found to unpack $CACHE" >&2
   exit 1
