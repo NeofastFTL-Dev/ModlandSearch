@@ -1,0 +1,19 @@
+# ---- Rust ----
+/target/
+**/*.rs.bk
+*.pdb
+
+# ---- Build output / installers ----
+/dist/
+*.exe
+*.msi
+*.zip
+
+# ---- Local logs and scratch ----
+*.log
+
+# ---- Editor / OS junk ----
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

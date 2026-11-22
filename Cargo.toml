@@ -1,0 +1,37 @@
+[package]
+name = "modland-search"
+version = "1.1.0"
+edition = "2021"
+description = "Search, preview and download tracker modules from Modland, Keygen Music, Battle of the Bits, The Mod Archive, scene.org and Amiga Music Preservation"
+license = "MIT"
+authors = ["NeofastFTL"]
+
+[lib]
+name = "modland_search"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ModlandZoeker"
+path = "src/main.rs"
+
+[[bin]]
+name = "modland-cli"
+path = "src/bin/modland_cli.rs"
+
+[build-dependencies]
+embed-resource = "2.5"
+
+[dependencies]
+eframe = { version = "0.31", default-features = false, features = ["default_fonts", "glow"] }
+libloading = "0.8"
+rfd = "0.15"
+rodio = { version = "0.19", default-features = false }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ureq = { version = "2.12", default-features = false, features = ["tls", "gzip"] }
+zip = { version = "2", default-features = false, features = ["deflate"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

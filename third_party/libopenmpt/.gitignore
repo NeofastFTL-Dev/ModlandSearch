@@ -1,0 +1,6 @@
+# Only the licence texts and changelog of the libopenmpt Windows dev package are
+# tracked. The DLLs, headers and import libraries are fetched by
+# scripts/fetch-libopenmpt.sh (called from build.sh) into this directory.
+bin/
+inc/
+lib/
