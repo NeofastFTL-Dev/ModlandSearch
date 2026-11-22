@@ -57,7 +57,7 @@ browser would, and you are responsible for respecting those sites.
 `./build.sh` wraps the build and the DLL copying described below, so a fresh clone needs nothing
 from outside the repository (it does need `cargo`; Rust is installed here via rustup in `~/.cargo`).
 The libopenmpt DLLs are not stored in git: on the first build the script downloads the pinned
-libopenmpt 0.8.9 Windows dev package (SHA-256 checked) into `target/libopenmpt-cache` and unpacks
+libopenmpt 0.8.10 Windows dev package (SHA-256 checked) into `target/libopenmpt-cache` and unpacks
 `bin/` into `third_party/libopenmpt/`. Later builds reuse that copy and work offline.
 
 ```bash

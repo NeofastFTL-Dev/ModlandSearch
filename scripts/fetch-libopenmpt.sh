@@ -13,10 +13,10 @@
 #   LIBOPENMPT_FORCE=1 ./scripts/fetch-libopenmpt.sh              # re-unpack anyway
 set -euo pipefail
 
-VERSION="0.8.9"
+VERSION="0.8.10"
 ARCHIVE="libopenmpt-${VERSION}+release.dev.windows.vs2022.zip"
 URL="https://lib.openmpt.org/files/libopenmpt/dev/${ARCHIVE}"
-SHA256="a23e375e576e3a6997ffeeb6cf34488e9020e2a5d8226856b02628b6a87c5e8e"
+SHA256="52481ca47d5386616adabd8048d0e7161f8abef9063afc9b241daca1e00251db"
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEST="$HERE/third_party/libopenmpt"
